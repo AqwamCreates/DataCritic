@@ -52,8 +52,6 @@ local function convertRowDataTextTableToNumberIfPossible(rowDataInText, separato
 	
 	for i, value in ipairs(splitRowDataInText) do
 		
-		
-		
 		local numberValue = tonumber(value)
 		
 		if numberValue then
