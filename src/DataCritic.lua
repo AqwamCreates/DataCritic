@@ -202,6 +202,12 @@ function DataCritic.new(dataToLoad, hasHeader, fileType, separator)
 	
 end
 
+function DataCritic:setHeader(headerTable)
+	
+	self.Header = headerTable
+	
+end
+
 function DataCritic:printHeader()
 	
 	print(self.Header)
