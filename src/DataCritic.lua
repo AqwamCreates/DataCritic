@@ -146,6 +146,36 @@ local loadDataFunctionList = {
 	
 }
 
+local function generateCapitalAlphabetHeaderTable(length)
+	
+	local headerTable = {}
+	
+	local startAscii = string.byte('A')
+	
+	local endAscii = string.byte('Z')
+
+	for i = 1, length do
+		
+		local index = i - 1
+		
+		local sequence = ""
+
+		repeat
+			
+			local remainder = (index % 26)
+			
+			sequence = string.char(startAscii + remainder) .. sequence
+			
+			index = math.floor(index / 26)
+			
+		until (index == 0)
+
+		table.insert(headerTable, sequence)
+	end
+
+	return headerTable
+end
+
 function DataCritic.new(dataToLoad, hasHeader, fileType, separator)
 	
 	local NewDataCritic = {}
@@ -163,6 +193,8 @@ function DataCritic.new(dataToLoad, hasHeader, fileType, separator)
 	end)
 	
 	if not success then error("Could not open " .. dataToLoad .. " file type!") end
+	
+	if not headerTable then headerTable = generateCapitalAlphabetHeaderTable(#dataMatrix[1]) end
 	
 	NewDataCritic.Header = headerTable
 	
