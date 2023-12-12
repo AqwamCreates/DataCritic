@@ -44,13 +44,15 @@ local function deepCopyTable(original, copies)
 
 end
 
-local function convertRowDataTextTableToNumberIfPossible(rowDataInText)
+local function convertRowDataTextTableToNumberIfPossible(rowDataInText, separator)
 	
 	local rowData = {}
 	
-	local splitRowDataInText = string.split(rowDataInText, ",")
+	local splitRowDataInText = string.split(rowDataInText, separator)
 	
 	for i, value in ipairs(splitRowDataInText) do
+		
+		
 		
 		local numberValue = tonumber(value)
 		
@@ -70,7 +72,13 @@ local function convertRowDataTextTableToNumberIfPossible(rowDataInText)
 	
 end
 
-local function loadDataFromCSV(dataToLoad, hasHeader)
+local function loadDataFromText(dataToLoad, hasHeader, separator)
+	
+	separator = separator or ","
+	
+	local patternToRemoveSpace =  separator .. "%s*"
+	
+	dataToLoad = string.gsub(dataToLoad, patternToRemoveSpace, separator)
 	
 	local headerTable
 	
@@ -88,19 +96,19 @@ local function loadDataFromCSV(dataToLoad, hasHeader)
 		
 		headerString = string.split(dataToLoad, "\n")[1]
 		
-		headerTable = string.split(headerString, ",")
+		headerTable = string.split(headerString, separator)
 		
-		local stringLengthToRemove = string.len(headerString) + 1
+		local stringLengthToRemove = string.len(headerString) + 2
 		
 		dataString = string.sub(dataToLoad, stringLengthToRemove, dataStringLength)
 		
 	end
 	
-	dataStringTable = string.split(dataToLoad, "\n")
+	dataStringTable = string.split(dataString, "\n")
 	
 	for i, rowDataInText in ipairs(dataStringTable) do
 		
-		local rowData = convertRowDataTextTableToNumberIfPossible(rowDataInText)
+		local rowData = convertRowDataTextTableToNumberIfPossible(rowDataInText, separator)
 		
 		table.insert(dataMatrix, rowData)
 		
@@ -128,37 +136,63 @@ local function loadDataFromMatrixTable(dataToLoad, hasHeader)
 	
 end
 
-local loadDataDictionary = {
+local loadDataFunctionList = {
 	
-	["csv"] = loadDataFromCSV,
+	["csv"] = loadDataFromText,
 	
-	["MatrixL"] = loadDataFromMatrixTable,
+	["txt"] = loadDataFromText,
+	
+	["Matrix"] = loadDataFromMatrixTable,
 	
 }
 
-function DataCritic.new(dataToLoad, hasHeader, fileType)
+function DataCritic.new(dataToLoad, hasHeader, fileType, separator)
 	
 	local NewDataCritic = {}
 
 	setmetatable(NewDataCritic, DataCritic)
 	
-	local header
+	local headerTable
 	
-	local data
+	local dataMatrix
 	
 	local success = pcall(function()
 		
-		header, data = loadDataDictionary[fileType](dataToLoad, hasHeader)
+		headerTable, dataMatrix = loadDataFunctionList[fileType](dataToLoad, hasHeader, separator)
 		
 	end)
 	
 	if not success then error("Could not open " .. dataToLoad .. " file type!") end
 	
-	NewDataCritic.Header = header
+	NewDataCritic.Header = headerTable
 	
-	NewDataCritic.Data = data
+	NewDataCritic.Data = dataMatrix
 	
 	return NewDataCritic
+	
+end
+
+function DataCritic:printHeader()
+	
+	print(self.Header)
+	
+end
+
+function DataCritic:printData()
+	
+	AqwamMatrixLibrary:printMatrix(self.Data)
+	
+end
+
+function DataCritic:getHeader()
+	
+	return self.Header
+	
+end
+
+function DataCritic:getData()
+	
+	return self.Data
 	
 end
 
