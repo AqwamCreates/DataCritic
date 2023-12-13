@@ -198,13 +198,29 @@ function DataCritic.new(dataToLoad, hasHeader, fileType, separator)
 	
 	NewDataCritic.Data = dataMatrix
 	
+	NewDataCritic.PreviousData = nil
+	
+	NewDataCritic.AlwaysSavePreviousData = false
+	
 	return NewDataCritic
+	
+end
+
+function DataCritic:setAlwaysSavePreviousData(isPreviousDataAlwaysSaved)
+	
+	self.AlwaysSavePreviousData = isPreviousDataAlwaysSaved
 	
 end
 
 function DataCritic:setHeader(headerTable)
 	
 	self.Header = headerTable
+	
+end
+
+function DataCritic:setColumnHeader(columnHeaderValue, column)
+	
+	self.Header[column] = columnHeaderValue
 	
 end
 
@@ -229,6 +245,134 @@ end
 function DataCritic:getData()
 	
 	return self.Data
+	
+end
+
+function DataCritic:setValue(value, row, column)
+	
+	self.Data[row][column] = value
+	
+end
+
+function DataCritic:replaceMissingDataWithValue(value, rowIndex, columnIndex)
+	
+	local rowIndexValueType = type(rowIndex)
+	
+	local columnIndexValueType = type(columnIndex)
+	
+	if (rowIndexValueType == "number") and (columnIndexValueType == "number") then
+		
+		local selectedValue = self.Data[rowIndex][columnIndex]
+		
+		if (type(selectedValue) == "nil") then self.Data[rowIndex][columnIndex] = value end
+		
+	elseif (rowIndexValueType == "number") and (columnIndexValueType == "nil") then
+		
+		for i = 1, #self.Data, 1 do
+			
+			if (type(self.Data[rowIndex][i]) == "nil") then self.Data[rowIndex][i] = value end
+			
+		end
+		
+	elseif (rowIndexValueType == "nil") and (columnIndexValueType == "number") then
+		
+		for i = 1, #self.Data[1], 1 do
+
+			if (type(self.Data[i][columnIndex]) == "nil") then self.Data[i][columnIndex] = value end
+
+		end
+		
+	else
+		
+		error("Invalid row or column index values.")
+		
+	end
+	
+end
+
+function DataCritic:replaceMissingDataWithFunction(functionToApply, rowIndex, columnIndex)
+	
+	local rowIndexValueType = type(rowIndex)
+
+	local columnIndexValueType = type(columnIndex)
+	
+	if (rowIndexValueType == "number") and (columnIndexValueType == "number") then
+
+		local selectedValue = self.Data[rowIndex][columnIndex]
+
+		if (type(selectedValue) == "nil") then 
+			
+			self.Data[rowIndex][columnIndex] = functionToApply(self.Data[rowIndex][columnIndex]) 
+			
+		end
+
+	elseif (rowIndexValueType == "number") and (columnIndexValueType == "nil") then
+
+		for i = 1, #self.Data, 1 do
+
+			if (type(self.Data[rowIndex][i]) == "nil") then self.Data[rowIndex][i] = functionToApply(self.Data[rowIndex][i]) end
+
+		end
+
+	elseif (rowIndexValueType == "nil") and (columnIndexValueType == "number") then
+
+		for i = 1, #self.Data[1], 1 do
+
+			if (type(self.Data[i][columnIndex]) == "nil") then self.Data[i][columnIndex] = functionToApply(self.Data[rowIndex][i]) end
+
+		end
+
+	else
+
+		error("Invalid row or column index values.")
+
+	end
+	
+end
+
+function DataCritic:extractRows(startingIndex, finalIndex)
+	
+	return AqwamMatrixLibrary:extractRows(self.Data, startingIndex, finalIndex)
+	
+end
+
+function DataCritic:extractColumns(startingIndex, finalIndex)
+	
+	return AqwamMatrixLibrary:extractColumns(self.Data, startingIndex, finalIndex)
+	
+end
+
+function DataCritic:addNewColumn(dataVector, columnIndex, columnHeaderValue)
+	
+	local columnIndexValueType = type(columnIndex)
+
+	if (columnIndexValueType ~= "number") and (columnIndexValueType ~= "nil") then error("Invalid column index value.") end
+	
+	local numberOfColumns =  #self.Data[1]
+	
+	columnIndex = columnIndex or numberOfColumns
+	
+	if (columnIndex <= 0) then error("The column index cannot be less than or equal to zero.") end
+	
+	if (columnIndex == numberOfColumns) then
+		
+		self.Data = AqwamMatrixLibrary:horizontalConcatenate(self.Data, dataVector)
+		
+	elseif (columnIndex == 1) then
+		
+		self.Data = AqwamMatrixLibrary:horizontalConcatenate(dataVector, self.Data)
+		
+	else
+		
+		local leftColumnVector = AqwamMatrixLibrary:extractColumns(1, columnIndex)
+		
+		local rightColumnVector = AqwamMatrixLibrary:extractColumns(columnIndex + 1, numberOfColumns)
+		
+		self.Data = AqwamMatrixLibrary:horizontalConcatenate(leftColumnVector, dataVector, rightColumnVector)
+				
+	end
+	
+	if columnHeaderValue then table.insert(self.Header, columnIndex, columnHeaderValue) end
 	
 end
 
