@@ -142,6 +142,8 @@ local loadDataFunctionList = {
 	
 	["Matrix"] = loadDataFromMatrixTable,
 	
+	["matrix"] = loadDataFromMatrixTable,
+	
 }
 
 local function generateCapitalAlphabetHeaderTable(length)
@@ -198,11 +200,29 @@ function DataCritic.new(dataToLoad, hasHeader, fileType, separator)
 	
 	NewDataCritic.Data = dataMatrix
 	
-	NewDataCritic.PreviousData = nil
-	
-	NewDataCritic.AlwaysSavePreviousData = false
+	NewDataCritic.AlwaysSavePreviousDataAndHeader = true
 	
 	return NewDataCritic
+	
+end
+
+function DataCritic:wrapFunctionInProtectedCall(functionToRun)
+	
+	local previousData = self.Data
+	
+	local previousHeader = self.Header
+	
+	local success = pcall(functionToRun)
+	
+	if not success and self.AlwaysSavePreviousDataAndHeader then 
+		
+		self.Data = previousData
+		
+		self.Header = previousHeader
+		
+	end
+	
+	return success
 	
 end
 
@@ -256,78 +276,130 @@ end
 
 function DataCritic:replaceMissingDataWithValue(value, rowIndex, columnIndex)
 	
-	local rowIndexValueType = type(rowIndex)
-	
-	local columnIndexValueType = type(columnIndex)
-	
-	if (rowIndexValueType == "number") and (columnIndexValueType == "number") then
+	self:wrapFunctionInProtectedCall(function()
 		
-		local selectedValue = self.Data[rowIndex][columnIndex]
-		
-		if (type(selectedValue) == "nil") then self.Data[rowIndex][columnIndex] = value end
-		
-	elseif (rowIndexValueType == "number") and (columnIndexValueType == "nil") then
-		
-		for i = 1, #self.Data, 1 do
-			
-			if (type(self.Data[rowIndex][i]) == "nil") then self.Data[rowIndex][i] = value end
-			
+		local rowIndexValueType = type(rowIndex)
+
+		local columnIndexValueType = type(columnIndex)
+
+		if (rowIndexValueType == "number") and (columnIndexValueType == "number") then
+
+			local selectedValue = self.Data[rowIndex][columnIndex]
+
+			if (type(selectedValue) == "nil") then self.Data[rowIndex][columnIndex] = value end
+
+		elseif (rowIndexValueType == "number") and (columnIndexValueType == "nil") then
+
+			for i = 1, #self.Data, 1 do
+
+				if (type(self.Data[rowIndex][i]) == "nil") then self.Data[rowIndex][i] = value end
+
+			end
+
+		elseif (rowIndexValueType == "nil") and (columnIndexValueType == "number") then
+
+			for i = 1, #self.Data[1], 1 do
+
+				if (type(self.Data[i][columnIndex]) == "nil") then self.Data[i][columnIndex] = value end
+
+			end
+
+		else
+
+			error("Invalid row or column index values.")
+
 		end
 		
-	elseif (rowIndexValueType == "nil") and (columnIndexValueType == "number") then
-		
-		for i = 1, #self.Data[1], 1 do
-
-			if (type(self.Data[i][columnIndex]) == "nil") then self.Data[i][columnIndex] = value end
-
-		end
-		
-	else
-		
-		error("Invalid row or column index values.")
-		
-	end
+	end)
 	
 end
 
 function DataCritic:replaceMissingDataWithFunction(functionToApply, rowIndex, columnIndex)
 	
-	local rowIndexValueType = type(rowIndex)
+	self:wrapFunctionInProtectedCall(function()
+		
+		local rowIndexValueType = type(rowIndex)
 
-	local columnIndexValueType = type(columnIndex)
+		local columnIndexValueType = type(columnIndex)
+
+		if (rowIndexValueType == "number") and (columnIndexValueType == "number") then
+
+			local selectedValue = self.Data[rowIndex][columnIndex]
+
+			if (type(selectedValue) == "nil") then 
+
+				self.Data[rowIndex][columnIndex] = functionToApply(self.Data[rowIndex][columnIndex]) 
+
+			end
+
+		elseif (rowIndexValueType == "number") and (columnIndexValueType == "nil") then
+
+			for i = 1, #self.Data, 1 do
+
+				if (type(self.Data[rowIndex][i]) == "nil") then self.Data[rowIndex][i] = functionToApply(self.Data[rowIndex][i]) end
+
+			end
+
+		elseif (rowIndexValueType == "nil") and (columnIndexValueType == "number") then
+
+			for i = 1, #self.Data[1], 1 do
+
+				if (type(self.Data[i][columnIndex]) == "nil") then self.Data[i][columnIndex] = functionToApply(self.Data[i][columnIndex]) end
+
+			end
+
+		else
+
+			error("Invalid row or column index values.")
+
+		end
+		
+	end)
 	
-	if (rowIndexValueType == "number") and (columnIndexValueType == "number") then
+end
 
-		local selectedValue = self.Data[rowIndex][columnIndex]
+function DataCritic:applyFunction(functionToApply, rowIndex, columnIndex)
 
-		if (type(selectedValue) == "nil") then 
-			
-			self.Data[rowIndex][columnIndex] = functionToApply(self.Data[rowIndex][columnIndex]) 
-			
+	self:wrapFunctionInProtectedCall(function()
+
+		local rowIndexValueType = type(rowIndex)
+
+		local columnIndexValueType = type(columnIndex)
+
+		if (rowIndexValueType == "number") and (columnIndexValueType == "number") then
+
+			local selectedValue = self.Data[rowIndex][columnIndex]
+
+			if (type(selectedValue) ~= "nil") then 
+
+				self.Data[rowIndex][columnIndex] = functionToApply(self.Data[rowIndex][columnIndex]) 
+
+			end
+
+		elseif (rowIndexValueType == "number") and (columnIndexValueType == "nil") then
+
+			for i = 1, #self.Data, 1 do
+
+				if (type(self.Data[rowIndex][i]) ~= "nil") then self.Data[rowIndex][i] = functionToApply(self.Data[rowIndex][i]) end
+
+			end
+
+		elseif (rowIndexValueType == "nil") and (columnIndexValueType == "number") then
+
+			for i = 1, #self.Data[1], 1 do
+
+				if (type(self.Data[i][columnIndex]) ~= "nil") then self.Data[i][columnIndex] = functionToApply(self.Data[i][columnIndex]) end
+
+			end
+
+		else
+
+			error("Invalid row or column index values.")
+
 		end
 
-	elseif (rowIndexValueType == "number") and (columnIndexValueType == "nil") then
+	end)
 
-		for i = 1, #self.Data, 1 do
-
-			if (type(self.Data[rowIndex][i]) == "nil") then self.Data[rowIndex][i] = functionToApply(self.Data[rowIndex][i]) end
-
-		end
-
-	elseif (rowIndexValueType == "nil") and (columnIndexValueType == "number") then
-
-		for i = 1, #self.Data[1], 1 do
-
-			if (type(self.Data[i][columnIndex]) == "nil") then self.Data[i][columnIndex] = functionToApply(self.Data[rowIndex][i]) end
-
-		end
-
-	else
-
-		error("Invalid row or column index values.")
-
-	end
-	
 end
 
 function DataCritic:extractRows(startingIndex, finalIndex)
@@ -342,38 +414,82 @@ function DataCritic:extractColumns(startingIndex, finalIndex)
 	
 end
 
-function DataCritic:addNewColumn(dataVector, columnIndex, columnHeaderValue)
+function DataCritic:addColumn(dataVector, columnIndex, columnHeaderValue)
 	
-	local columnIndexValueType = type(columnIndex)
+	self:wrapFunctionInProtectedCall(function()
+		
+		local columnIndexValueType = type(columnIndex)
 
-	if (columnIndexValueType ~= "number") and (columnIndexValueType ~= "nil") then error("Invalid column index value.") end
+		if (columnIndexValueType ~= "number") and (columnIndexValueType ~= "nil") then error("Invalid column index value.") end
+
+		local numberOfColumns =  #self.Data[1]
+
+		columnIndex = columnIndex or numberOfColumns
+
+		if (columnIndex <= 0) then error("The column index cannot be less than or equal to zero.") end
+
+		if (columnIndex == numberOfColumns) then
+
+			self.Data = AqwamMatrixLibrary:horizontalConcatenate(self.Data, dataVector)
+
+		elseif (columnIndex == 1) then
+
+			self.Data = AqwamMatrixLibrary:horizontalConcatenate(dataVector, self.Data)
+
+		else
+
+			local leftColumnVector = AqwamMatrixLibrary:extractColumns(self.Data, 1, columnIndex)
+
+			local rightColumnVector = AqwamMatrixLibrary:extractColumns(self.Data, columnIndex + 1, numberOfColumns)
+
+			self.Data = AqwamMatrixLibrary:horizontalConcatenate(leftColumnVector, dataVector, rightColumnVector)
+
+		end
+
+		if columnHeaderValue then table.insert(self.Header, columnIndex, columnHeaderValue) end
+		
+	end)
 	
-	local numberOfColumns =  #self.Data[1]
-	
-	columnIndex = columnIndex or numberOfColumns
-	
-	if (columnIndex <= 0) then error("The column index cannot be less than or equal to zero.") end
-	
-	if (columnIndex == numberOfColumns) then
+end
+
+function DataCritic:deleteColumn(dataVector, columnIndex, columnHeaderValue)
+
+	self:wrapFunctionInProtectedCall(function()
+
+		local columnIndexValueType = type(columnIndex)
+
+		if (columnIndexValueType ~= "number") and (columnIndexValueType ~= "nil") then error("Invalid column index value.") end
+
+		local numberOfColumns =  #self.Data[1]
+
+		columnIndex = columnIndex or numberOfColumns
+
+		if (columnIndex <= 0) then error("The column index cannot be less than or equal to zero.") end
 		
-		self.Data = AqwamMatrixLibrary:horizontalConcatenate(self.Data, dataVector)
-		
-	elseif (columnIndex == 1) then
-		
-		self.Data = AqwamMatrixLibrary:horizontalConcatenate(dataVector, self.Data)
-		
-	else
-		
-		local leftColumnVector = AqwamMatrixLibrary:extractColumns(1, columnIndex)
-		
-		local rightColumnVector = AqwamMatrixLibrary:extractColumns(columnIndex + 1, numberOfColumns)
-		
-		self.Data = AqwamMatrixLibrary:horizontalConcatenate(leftColumnVector, dataVector, rightColumnVector)
-				
-	end
-	
-	if columnHeaderValue then table.insert(self.Header, columnIndex, columnHeaderValue) end
-	
+		if (columnIndex > numberOfColumns) then error("The column index exceeds the number of columns") end
+
+		if (columnIndex == numberOfColumns) then
+
+			self.Data = AqwamMatrixLibrary:extractColumns(self.Data, 1, numberOfColumns - 1)
+
+		elseif (columnIndex == 1) then
+
+			self.Data = AqwamMatrixLibrary:extractColumns(self.Data, 2, numberOfColumns)
+
+		else
+
+			local leftColumnVector = AqwamMatrixLibrary:extractColumns(self.Data, 1, columnIndex - 1)
+
+			local rightColumnVector = AqwamMatrixLibrary:extractColumns(self.Data, columnIndex + 1, numberOfColumns)
+
+			self.Data = AqwamMatrixLibrary:horizontalConcatenate(leftColumnVector, rightColumnVector)
+
+		end
+
+		if columnHeaderValue then table.insert(self.Header, columnIndex, columnHeaderValue) end
+
+	end)
+
 end
 
 return DataCritic
