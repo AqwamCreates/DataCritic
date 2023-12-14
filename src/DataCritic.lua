@@ -414,7 +414,7 @@ function DataCritic:extractColumns(startingIndex, finalIndex)
 	
 end
 
-function DataCritic:addColumn(dataVector, columnIndex, columnHeaderValue)
+function DataCritic:addColumn(dataColumnVector, columnIndex, columnHeaderValue)
 	
 	self:wrapFunctionInProtectedCall(function()
 		
@@ -427,14 +427,16 @@ function DataCritic:addColumn(dataVector, columnIndex, columnHeaderValue)
 		columnIndex = columnIndex or numberOfColumns
 
 		if (columnIndex <= 0) then error("The column index cannot be less than or equal to zero.") end
+		
+		if (#dataColumnVector ~= #self.Data) then error("Incompatible number of rows!") end
 
 		if (columnIndex == numberOfColumns) then
 
-			self.Data = AqwamMatrixLibrary:horizontalConcatenate(self.Data, dataVector)
+			self.Data = AqwamMatrixLibrary:horizontalConcatenate(self.Data, dataColumnVector)
 
 		elseif (columnIndex == 1) then
 
-			self.Data = AqwamMatrixLibrary:horizontalConcatenate(dataVector, self.Data)
+			self.Data = AqwamMatrixLibrary:horizontalConcatenate(dataColumnVector, self.Data)
 
 		else
 
@@ -442,7 +444,7 @@ function DataCritic:addColumn(dataVector, columnIndex, columnHeaderValue)
 
 			local rightColumnVector = AqwamMatrixLibrary:extractColumns(self.Data, columnIndex + 1, numberOfColumns)
 
-			self.Data = AqwamMatrixLibrary:horizontalConcatenate(leftColumnVector, dataVector, rightColumnVector)
+			self.Data = AqwamMatrixLibrary:horizontalConcatenate(leftColumnVector, dataColumnVector, rightColumnVector)
 
 		end
 
@@ -452,7 +454,45 @@ function DataCritic:addColumn(dataVector, columnIndex, columnHeaderValue)
 	
 end
 
-function DataCritic:deleteColumn(dataVector, columnIndex, columnHeaderValue)
+function DataCritic:addRow(dataRowVector, rowIndex)
+
+	self:wrapFunctionInProtectedCall(function()
+
+		local rowIndexValueType = type(rowIndex)
+
+		if (rowIndexValueType ~= "number") and (rowIndexValueType ~= "nil") then error("Invalid column index value.") end
+
+		local numberOfRows = #self.Data
+
+		rowIndex = rowIndex or numberOfRows
+
+		if (rowIndex <= 0) then error("The column index cannot be less than or equal to zero.") end
+		
+		if (#dataRowVector[1] ~= #self.Data[1]) then error("Incompatible number of columns!") end
+
+		if (rowIndex == numberOfRows) then
+
+			self.Data = AqwamMatrixLibrary:verticalConcatenate(self.Data, dataRowVector)
+
+		elseif (rowIndex == 1) then
+
+			self.Data = AqwamMatrixLibrary:verticalConcatenate(dataRowVector, self.Data)
+
+		else
+
+			local upRowVector = AqwamMatrixLibrary:extractRows(self.Data, 1, rowIndex)
+
+			local bottomRowVector = AqwamMatrixLibrary:extractRows(self.Data, rowIndex + 1, numberOfRows)
+
+			self.Data = AqwamMatrixLibrary:verticalConcatenate(upRowVector, dataRowVector, bottomRowVector)
+
+		end
+
+	end)
+
+end
+
+function DataCritic:deleteColumn(columnIndex)
 
 	self:wrapFunctionInProtectedCall(function()
 
@@ -466,7 +506,7 @@ function DataCritic:deleteColumn(dataVector, columnIndex, columnHeaderValue)
 
 		if (columnIndex <= 0) then error("The column index cannot be less than or equal to zero.") end
 		
-		if (columnIndex > numberOfColumns) then error("The column index exceeds the number of columns") end
+		if (columnIndex > numberOfColumns) then error("The column index exceeds the number of columns.") end
 
 		if (columnIndex == numberOfColumns) then
 
@@ -486,7 +526,45 @@ function DataCritic:deleteColumn(dataVector, columnIndex, columnHeaderValue)
 
 		end
 
-		if columnHeaderValue then table.insert(self.Header, columnIndex, columnHeaderValue) end
+		table.remove(self.Header, columnIndex)
+
+	end)
+
+end
+
+function DataCritic:deleteRow(rowIndex)
+
+	self:wrapFunctionInProtectedCall(function()
+
+		local rowIndexValueType = type(rowIndex)
+
+		if (rowIndexValueType ~= "number") and (rowIndexValueType ~= "nil") then error("Invalid column index value.") end
+
+		local numberOfRows =  #self.Data
+
+		rowIndex = rowIndex or numberOfRows
+
+		if (rowIndex <= 0) then error("The column index cannot be less than or equal to zero.") end
+
+		if (rowIndex > numberOfRows) then error("The row index exceeds the number of rows.") end
+
+		if (rowIndex == numberOfRows) then
+
+			self.Data = AqwamMatrixLibrary:extractRows(self.Data, 1, numberOfRows - 1)
+
+		elseif (rowIndex == 1) then
+
+			self.Data = AqwamMatrixLibrary:extractRows(self.Data, 2, numberOfRows)
+
+		else
+
+			local upRowVector = AqwamMatrixLibrary:extractRows(self.Data, 1, rowIndex - 1)
+
+			local bottomRowVector = AqwamMatrixLibrary:extractRows(self.Data, rowIndex + 1, numberOfRows)
+
+			self.Data = AqwamMatrixLibrary:verticalConcatenate(upRowVector, bottomRowVector)
+
+		end
 
 	end)
 
