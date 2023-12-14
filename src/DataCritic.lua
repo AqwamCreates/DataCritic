@@ -570,4 +570,22 @@ function DataCritic:deleteRow(rowIndex)
 
 end
 
+function DataCritic:selectRowsWithValuesOf(valueTable, columnIndex)
+	
+	if (type(valueTable) ~= "table") then valueTable = {valueTable} end
+	
+	if (columnIndex > #self.Data[1]) then error("The column index exceeds the number of columns.") end
+	
+	local selectedRows = {}
+	
+	for rowIndex = 1, #self.Data, 1 do
+		
+		if table.find(valueTable, self.Data[rowIndex][columnIndex]) then table.insert(selectedRows, self.Data[rowIndex][columnIndex]) end
+		
+	end
+	
+	return selectedRows
+	
+end
+
 return DataCritic
