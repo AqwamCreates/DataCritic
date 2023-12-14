@@ -200,7 +200,13 @@ function DataCritic.new(dataToLoad, hasHeader, fileType, separator)
 	
 	NewDataCritic.Data = dataMatrix
 	
-	NewDataCritic.AlwaysSavePreviousDataAndHeader = true
+	NewDataCritic.PreviousHeader = nil
+	
+	NewDataCritic.PreviousData = nil
+	
+	NewDataCritic.AlwaysSavePreviousDataAndHeader = false
+	
+	NewDataCritic.RevertToPreviousDataAndHeaderIfError = true
 	
 	return NewDataCritic
 	
@@ -212,13 +218,19 @@ function DataCritic:wrapFunctionInProtectedCall(functionToRun)
 	
 	local previousHeader = self.Header
 	
+	if self.AlwaysSavePreviousDataAndHeader then
+		
+		self.PreviousHeader = previousHeader
+		self.PreviousData = previousData
+
+	end
+	
 	local success = pcall(functionToRun)
 	
-	if not success and self.AlwaysSavePreviousDataAndHeader then 
-		
-		self.Data = previousData
+	if not success and self.RevertToPreviousDataAndHeaderIfError then 
 		
 		self.Header = previousHeader
+		self.Data = previousData
 		
 	end
 	
@@ -226,9 +238,15 @@ function DataCritic:wrapFunctionInProtectedCall(functionToRun)
 	
 end
 
-function DataCritic:setAlwaysSavePreviousData(isPreviousDataAlwaysSaved)
+function DataCritic:setAlwaysSavePreviousData(isEnabled)
+
+	self.AlwaysSavePreviousData = isEnabled
+
+end
+
+function DataCritic:setRevertToPreviousDataAndHeaderIfError(isEnabled)
 	
-	self.AlwaysSavePreviousData = isPreviousDataAlwaysSaved
+	self.RevertToPreviousDataAndHeaderIfError = isEnabled
 	
 end
 
