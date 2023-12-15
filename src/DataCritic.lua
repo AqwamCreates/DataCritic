@@ -284,19 +284,65 @@ function DataCritic:printDataFrame()
 		
 	end
 	
-	for i = 1, #self.Data, 1 do
+	for column = 1, #self.Data[1], 1 do
 		
-		for j = 1, #self.Data[1], 1 do
+		for row = 1, #self.Data, 1 do
 			
-			maxLengthArray[i] = math.max(maxLengthArray[i], string.len(tostring(self.Header[i])))
+			maxLengthArray[column] = math.max(maxLengthArray[row], string.len(tostring(self.Header[row])))
 			
 		end
 		
 	end
 	
-	local stringToPrint = ""
+	local stringToPrint = "\n\n+"
+
+	for i = 1, #self.Header, 1 do
+		
+		stringToPrint = stringToPrint .. string.rep("-", maxLengthArray[i] + 2) .. "+"
+		
+	end
+
+	stringToPrint = stringToPrint .. "\n| "
 	
+	for i = 1, #self.Header, 1 do
+		
+		stringToPrint = stringToPrint .. string.format("%-" .. maxLengthArray[i] .. "s", self.Header[i]) .. " | "
+		
+	end
 	
+	stringToPrint = stringToPrint .. "\n+"
+
+	for i = 1, #self.Header, 1 do
+		
+		stringToPrint = stringToPrint .. string.rep("-", maxLengthArray[i] + 2) .. "+"
+		
+	end
+	
+	stringToPrint = stringToPrint .. "\n"
+
+	for i = 1, #self.Data, 1 do
+		
+		stringToPrint = stringToPrint .. "| "
+		
+		for j = 1, #self.Data[i], 1 do
+			
+			stringToPrint = stringToPrint .. string.format("%-" .. maxLengthArray[j] .. "s", tostring(self.Data[i][j])) .. " | "
+			
+		end
+		
+		stringToPrint = stringToPrint .. "\n"
+		
+	end
+	
+	stringToPrint = stringToPrint .. "+"
+
+	for i = 1, #self.Header, 1 do
+
+		stringToPrint = stringToPrint .. string.rep("-", maxLengthArray[i] + 2) .. "+"
+
+	end
+	
+	print(stringToPrint)
 	
 end
 
