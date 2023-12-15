@@ -352,10 +352,22 @@ function DataCritic:getHeader()
 	
 end
 
+function DataCritic:getPreviousHeader()
+	
+	return self.PreviousHeader
+	
+end
+
 function DataCritic:getData()
 	
 	return self.Data
 	
+end
+
+function DataCritic:getPreviousData()
+
+	return self.PreviousData
+
 end
 
 function DataCritic:setValue(value, row, column)
