@@ -722,7 +722,7 @@ function DataCritic:selectRowsWithValuesOf(valueTable, columnIndex)
 	
 end
 
-function DataCritic:exportDataframe(fileType, separator)
+function DataCritic:exportDataFrame(fileType, separator)
 	
 	fileType = fileType or "csv"
 	
