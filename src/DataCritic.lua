@@ -304,7 +304,7 @@ function DataCritic:printDataFrame()
 				
 			end
 			
-			maxLengthArray[column] = math.max(maxLengthArray[row], string.len(stringValue))
+			maxLengthArray[column] = math.max(maxLengthArray[column], string.len(stringValue))
 			
 		end
 		
