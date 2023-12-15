@@ -371,6 +371,8 @@ function DataCritic:printDataFrame()
 		stringToPrint = stringToPrint .. string.rep("-", maxLengthArray[i] + 2) .. "+"
 
 	end
+	
+	stringToPrint = stringToPrint .. "\n\n"
 
 	print(stringToPrint)
 	
