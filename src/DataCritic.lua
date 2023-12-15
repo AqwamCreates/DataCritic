@@ -277,23 +277,37 @@ end
 function DataCritic:printDataFrame()
 	
 	local maxLengthArray = {}
-	
+
 	for i = 1, #self.Header, 1 do
 		
 		table.insert(maxLengthArray, string.len(tostring(self.Header[i])))
 		
 	end
-	
+
 	for column = 1, #self.Data[1], 1 do
 		
 		for row = 1, #self.Data, 1 do
 			
-			maxLengthArray[column] = math.max(maxLengthArray[row], string.len(tostring(self.Header[row])))
+			local value = self.Data[row][column]
+			
+			local stringValue
+			
+			if (type(value) == "nil") then
+				
+				stringValue = "nil"
+				
+			else
+				
+				stringValue = tostring(value)
+				
+			end
+			
+			maxLengthArray[column] = math.max(maxLengthArray[row], string.len(stringValue))
 			
 		end
 		
 	end
-	
+
 	local stringToPrint = "\n\n+"
 
 	for i = 1, #self.Header, 1 do
@@ -303,13 +317,13 @@ function DataCritic:printDataFrame()
 	end
 
 	stringToPrint = stringToPrint .. "\n| "
-	
+
 	for i = 1, #self.Header, 1 do
 		
-		stringToPrint = stringToPrint .. string.format("%-" .. maxLengthArray[i] .. "s", self.Header[i]) .. " | "
+		stringToPrint = stringToPrint .. string.format("%" .. maxLengthArray[i] .. "s", self.Header[i]) .. " | "
 		
 	end
-	
+
 	stringToPrint = stringToPrint .. "\n+"
 
 	for i = 1, #self.Header, 1 do
@@ -317,7 +331,7 @@ function DataCritic:printDataFrame()
 		stringToPrint = stringToPrint .. string.rep("-", maxLengthArray[i] + 2) .. "+"
 		
 	end
-	
+
 	stringToPrint = stringToPrint .. "\n"
 
 	for i = 1, #self.Data, 1 do
@@ -326,22 +340,36 @@ function DataCritic:printDataFrame()
 		
 		for j = 1, #self.Data[i], 1 do
 			
-			stringToPrint = stringToPrint .. string.format("%-" .. maxLengthArray[j] .. "s", tostring(self.Data[i][j])) .. " | "
+			local value = self.Data[i][j]
+			
+			local stringToConcatenate
+			
+			if (type(value) == "nil") then
+				
+				stringToConcatenate = "nil"
+				
+			else
+				
+				stringToConcatenate = tostring(value)
+				
+			end
+			
+			stringToPrint = stringToPrint .. string.format("%" .. maxLengthArray[j] .. "s", stringToConcatenate) .. " | "
 			
 		end
 		
 		stringToPrint = stringToPrint .. "\n"
 		
 	end
-	
+
 	stringToPrint = stringToPrint .. "+"
 
 	for i = 1, #self.Header, 1 do
-
+		
 		stringToPrint = stringToPrint .. string.rep("-", maxLengthArray[i] + 2) .. "+"
-
+		
 	end
-	
+
 	print(stringToPrint)
 	
 end
