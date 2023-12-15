@@ -690,4 +690,71 @@ function DataCritic:selectRowsWithValuesOf(valueTable, columnIndex)
 	
 end
 
+function DataCritic:exportDataframe(fileType, separator)
+	
+	fileType = fileType or "csv"
+	
+	if (fileType == "matrix") then
+		
+		return AqwamMatrixLibrary:verticalConcatenate({self.Header}, self.Data)
+		
+	elseif (fileType == "csv") or (fileType == "text") then
+		
+		local stringToExport = ""
+		
+		separator = separator or ","
+		
+		for i, headerValue in ipairs(self.Header) do
+			
+			stringToExport = stringToExport .. headerValue
+			
+			if (i < #self.Header) then stringToExport = stringToExport .. separator end
+			
+		end
+		
+		stringToExport = stringToExport .. "\n"
+
+		for _, dataRow in ipairs(self.Data) do
+			
+			for i, dataValue in ipairs(dataRow) do
+				
+				stringToExport = stringToExport .. dataValue
+				
+				if (i < #dataRow) then stringToExport = stringToExport .. separator end
+			end
+			
+			stringToExport = stringToExport .. "\n"
+			
+		end
+
+		return stringToExport
+		
+	end
+	
+end
+
+function DataCritic:findRowsWithMissingData(columnIndexTable)
+	
+	local rowIndexTable = {}
+	
+	for rowIndex, rowData in ipairs(self.Data) do
+		
+		for _, columnIndex in ipairs(columnIndexTable) do
+			
+			if (rowData[columnIndex] == nil) or (rowData[columnIndex] == "") then
+				
+				table.insert(rowIndexTable, rowIndex)
+				
+				break
+				
+			end
+			
+		end
+		
+	end
+	
+	return rowIndexTable
+	
+end
+
 return DataCritic
