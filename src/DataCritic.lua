@@ -757,4 +757,26 @@ function DataCritic:findRowsWithMissingData(columnIndexTable)
 	
 end
 
+function DataCritic:findColumnsWithMissingData(rowIndexTable)
+	
+	local columnIndexTable = {}
+
+	for _, columnIndex in ipairs(rowIndexTable) do
+		
+		for rowIndex = 1, #self.Data do
+			
+			if (self.Data[rowIndex][columnIndex] == nil) or (self.Data[rowIndex][columnIndex] == "") then
+				
+				table.insert(columnIndexTable, columnIndex)
+				
+				break
+			end
+		end
+		
+	end
+
+	return columnIndexTable
+	
+end
+
 return DataCritic
