@@ -277,6 +277,8 @@ end
 function DataCritic:printDataFrame()
 	
 	local maxLengthArray = {}
+	
+	local maxRowIndexLength = string.len(tostring(#self.Data))
 
 	for i = 1, #self.Header, 1 do
 		
@@ -308,15 +310,15 @@ function DataCritic:printDataFrame()
 		
 	end
 
-	local stringToPrint = "\n\n+"
+	local stringToPrint = "\n\n" .. string.rep(" ", maxRowIndexLength + 3) .. "+"
 
 	for i = 1, #self.Header, 1 do
 		
 		stringToPrint = stringToPrint .. string.rep("-", maxLengthArray[i] + 2) .. "+"
 		
 	end
-
-	stringToPrint = stringToPrint .. "\n| "
+	
+	stringToPrint = stringToPrint .. "\n" .. string.rep(" ", maxRowIndexLength + 3) .. "| "
 
 	for i = 1, #self.Header, 1 do
 		
@@ -324,7 +326,7 @@ function DataCritic:printDataFrame()
 		
 	end
 
-	stringToPrint = stringToPrint .. "\n+"
+	stringToPrint = stringToPrint .. "\n+" .. string.rep("-", maxRowIndexLength + 2) .. "+"
 
 	for i = 1, #self.Header, 1 do
 		
@@ -336,11 +338,9 @@ function DataCritic:printDataFrame()
 
 	for row = 1, table.maxn(self.Data), 1 do
 		
-		stringToPrint = stringToPrint .. "| "
+		stringToPrint = stringToPrint .. "| " .. string.format("%" .. maxRowIndexLength .. "s", row) .. " | "
 		
 		for column = 1, table.maxn(self.Data[row]), 1 do
-			
-			print(column)
 			
 			local value = self.Data[row][column]
 			
@@ -364,12 +364,12 @@ function DataCritic:printDataFrame()
 		
 	end
 
-	stringToPrint = stringToPrint .. "+"
+	stringToPrint = stringToPrint .. "+" .. string.rep("-", maxRowIndexLength + 2) .. "+"
 
 	for i = 1, #self.Header, 1 do
-		
+
 		stringToPrint = stringToPrint .. string.rep("-", maxLengthArray[i] + 2) .. "+"
-		
+
 	end
 
 	print(stringToPrint)
