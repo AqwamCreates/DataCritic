@@ -334,13 +334,13 @@ function DataCritic:printDataFrame()
 
 	stringToPrint = stringToPrint .. "\n"
 
-	for i = 1, #self.Data, 1 do
+	for row = 1, #self.Data, 1 do
 		
 		stringToPrint = stringToPrint .. "| "
 		
-		for j = 1, #self.Data[i], 1 do
+		for column = 1, #self.Data[row], 1 do
 			
-			local value = self.Data[i][j]
+			local value = self.Data[row][column]
 			
 			local stringToConcatenate
 			
@@ -348,13 +348,15 @@ function DataCritic:printDataFrame()
 				
 				stringToConcatenate = "nil"
 				
+				print("test")
+				
 			else
 				
 				stringToConcatenate = tostring(value)
 				
 			end
 			
-			stringToPrint = stringToPrint .. string.format("%" .. maxLengthArray[j] .. "s", stringToConcatenate) .. " | "
+			stringToPrint = stringToPrint .. string.format("%" .. maxLengthArray[column] .. "s", stringToConcatenate) .. " | "
 			
 		end
 		
