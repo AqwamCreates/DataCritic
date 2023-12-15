@@ -274,6 +274,32 @@ function DataCritic:printData()
 	
 end
 
+function DataCritic:printDataFrame()
+	
+	local maxLengthArray = {}
+	
+	for i = 1, #self.Header, 1 do
+		
+		table.insert(maxLengthArray, string.len(tostring(self.Header[i])))
+		
+	end
+	
+	for i = 1, #self.Data, 1 do
+		
+		for j = 1, #self.Data[1], 1 do
+			
+			maxLengthArray[i] = math.max(maxLengthArray[i], string.len(tostring(self.Header[i])))
+			
+		end
+		
+	end
+	
+	local stringToPrint = ""
+	
+	
+	
+end
+
 function DataCritic:getHeader()
 	
 	return self.Header
