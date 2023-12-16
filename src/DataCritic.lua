@@ -799,7 +799,7 @@ function DataCritic:exportDataFrame(fileType, separator)
 			
 			stringToExport = stringToExport .. headerValue
 			
-			if (i < #self.Header) then stringToExport = stringToExport .. separator end
+			if (i < #self.Header) then stringToExport = stringToExport .. separator .. " " end
 			
 		end
 		
