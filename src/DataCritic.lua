@@ -571,7 +571,20 @@ function DataCritic:applyFunction(functionToApply, rowIndex, columnIndex)
 				if (type(self.Data[i][columnIndex]) ~= "nil") then self.Data[i][columnIndex] = functionToApply(self.Data[i][columnIndex]) end
 
 			end
+			
+			
+		elseif (rowIndexValueType == "nil") and (columnIndexValueType == "nil") then
 
+			for i = 1, #self.Data, 1 do
+
+				for j = 1, #self.Data[1] do
+
+					if (type(self.Data[i][j]) ~= "nil") then self.Data[i][j] = functionToApply(self.Data[i][j]) end
+
+				end
+
+			end
+			
 		else
 
 			error("Invalid row or column index values.")
