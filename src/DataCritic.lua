@@ -227,7 +227,7 @@ function DataCritic:wrapFunctionInProtectedCall(functionToRun)
 	
 	local success = pcall(functionToRun)
 	
-	if not success and self.RevertToPreviousDataAndHeaderIfError then 
+	if (not success) and (self.RevertToPreviousDataAndHeaderIfError) then 
 		
 		self.Header = previousHeader
 		self.Data = previousData
