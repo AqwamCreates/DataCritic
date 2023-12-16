@@ -408,6 +408,28 @@ function DataCritic:setValue(value, row, column)
 	
 end
 
+function DataCritic:revertToPreviousDataFrame()
+	
+	local success = pcall(function()
+		
+		local currentHeader = self.Header
+
+		local currentData = self.Data
+
+		self.Header = self.PreviousHeader
+
+		self.Data = self.PreviousData
+
+		self.PreviousHeader = currentHeader
+
+		self.PreviousData = currentData
+		
+	end)
+	
+	return success
+	
+end
+
 function DataCritic:replaceMissingDataWithValue(value, rowIndex, columnIndex)
 	
 	self:wrapFunctionInProtectedCall(function()
@@ -714,7 +736,7 @@ function DataCritic:selectRowsWithValuesOf(valueTable, columnIndex)
 	
 	for rowIndex = 1, #self.Data, 1 do
 		
-		if table.find(valueTable, self.Data[rowIndex][columnIndex]) then table.insert(selectedRows, self.Data[rowIndex][columnIndex]) end
+		if table.find(valueTable, self.Data[rowIndex][columnIndex]) then table.insert(selectedRows, rowIndex) end
 		
 	end
 	
@@ -766,6 +788,8 @@ function DataCritic:exportDataFrame(fileType, separator)
 end
 
 function DataCritic:findRowsWithMissingData(columnIndexTable)
+	
+	if (type(columnIndexTable) ~= "table") then columnIndexTable = {columnIndexTable} end
 	
 	local rowIndexTable = {}
 	
