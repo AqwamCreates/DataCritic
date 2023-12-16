@@ -446,7 +446,7 @@ function DataCritic:replaceMissingDataWithValue(value, rowIndex, columnIndex)
 
 		elseif (rowIndexValueType == "number") and (columnIndexValueType == "nil") then
 
-			for i = 1, #self.Data, 1 do
+			for i = 1, #self.Data[1], 1 do
 
 				if (type(self.Data[rowIndex][i]) == "nil") then self.Data[rowIndex][i] = value end
 
@@ -454,10 +454,22 @@ function DataCritic:replaceMissingDataWithValue(value, rowIndex, columnIndex)
 
 		elseif (rowIndexValueType == "nil") and (columnIndexValueType == "number") then
 
-			for i = 1, #self.Data[1], 1 do
+			for i = 1, #self.Data, 1 do
 
 				if (type(self.Data[i][columnIndex]) == "nil") then self.Data[i][columnIndex] = value end
 
+			end
+			
+		elseif (rowIndexValueType == "nil") and (columnIndexValueType == "nil") then
+			
+			for i = 1, #self.Data, 1 do
+				
+				for j = 1, #self.Data[1] do
+					
+					if (type(self.Data[i][j]) == "nil") then self.Data[i][j] = value end
+					
+				end
+				
 			end
 
 		else
@@ -490,7 +502,7 @@ function DataCritic:replaceMissingDataWithFunction(functionToApply, rowIndex, co
 
 		elseif (rowIndexValueType == "number") and (columnIndexValueType == "nil") then
 
-			for i = 1, #self.Data, 1 do
+			for i = 1, #self.Data[1], 1 do
 
 				if (type(self.Data[rowIndex][i]) == "nil") then self.Data[rowIndex][i] = functionToApply(self.Data[rowIndex][i]) end
 
@@ -498,12 +510,24 @@ function DataCritic:replaceMissingDataWithFunction(functionToApply, rowIndex, co
 
 		elseif (rowIndexValueType == "nil") and (columnIndexValueType == "number") then
 
-			for i = 1, #self.Data[1], 1 do
+			for i = 1, #self.Data, 1 do
 
 				if (type(self.Data[i][columnIndex]) == "nil") then self.Data[i][columnIndex] = functionToApply(self.Data[i][columnIndex]) end
 
 			end
+			
+		elseif (rowIndexValueType == "nil") and (columnIndexValueType == "nil") then
 
+			for i = 1, #self.Data, 1 do
+
+				for j = 1, #self.Data[1] do
+
+					if (type(self.Data[i][j]) == "nil") then self.Data[i][j] = functionToApply(self.Data[i][j]) end
+
+				end
+
+			end
+			
 		else
 
 			error("Invalid row or column index values.")
@@ -534,7 +558,7 @@ function DataCritic:applyFunction(functionToApply, rowIndex, columnIndex)
 
 		elseif (rowIndexValueType == "number") and (columnIndexValueType == "nil") then
 
-			for i = 1, #self.Data, 1 do
+			for i = 1, #self.Data[1], 1 do
 
 				if (type(self.Data[rowIndex][i]) ~= "nil") then self.Data[rowIndex][i] = functionToApply(self.Data[rowIndex][i]) end
 
@@ -542,7 +566,7 @@ function DataCritic:applyFunction(functionToApply, rowIndex, columnIndex)
 
 		elseif (rowIndexValueType == "nil") and (columnIndexValueType == "number") then
 
-			for i = 1, #self.Data[1], 1 do
+			for i = 1, #self.Data, 1 do
 
 				if (type(self.Data[i][columnIndex]) ~= "nil") then self.Data[i][columnIndex] = functionToApply(self.Data[i][columnIndex]) end
 
@@ -832,6 +856,53 @@ function DataCritic:findColumnsWithMissingData(rowIndexTable)
 	end
 
 	return columnIndexTable
+	
+end
+
+function DataCritic:removeMissingData(rowIndex, columnIndex)
+	
+	self:wrapFunctionInProtectedCall(function()
+		
+		local newData = {}
+
+		local rowIndexValueType = type(rowIndex)
+
+		local columnIndexValueType = type(columnIndex)
+
+		if (rowIndexValueType == "number") and (columnIndexValueType == "number") then
+
+			local selectedValue = self.Data[rowIndex][columnIndex]
+
+
+		elseif (rowIndexValueType == "number") and (columnIndexValueType == "nil") then
+
+			for i = 1, #self.Data[1], 1 do
+				
+				local value = self.Data[rowIndex][i]
+				
+				if (type(value) ~= "nil") then table.insert(newData, self.Data[rowIndex]) end
+
+			end
+
+		elseif (rowIndexValueType == "nil") and (columnIndexValueType == "number") then
+
+			for i = 1, #self.Data, 1 do
+				
+				local value = self.Data[i][columnIndex]
+				
+				if (type(value) ~= "nil") then table.insert(newData, self.Data[i]) end
+
+			end
+
+		else
+
+			error("Invalid row or column index values.")
+
+		end
+		
+		self.Data = newData
+
+	end)
 	
 end
 
