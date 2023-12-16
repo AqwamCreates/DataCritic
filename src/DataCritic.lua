@@ -432,7 +432,7 @@ end
 
 function DataCritic:replaceMissingDataWithValue(value, rowIndex, columnIndex)
 	
-	self:wrapFunctionInProtectedCall(function()
+	return self:wrapFunctionInProtectedCall(function()
 		
 		local rowIndexValueType = type(rowIndex)
 
@@ -484,7 +484,7 @@ end
 
 function DataCritic:replaceMissingDataWithFunction(functionToApply, rowIndex, columnIndex)
 	
-	self:wrapFunctionInProtectedCall(function()
+	return self:wrapFunctionInProtectedCall(function()
 		
 		local rowIndexValueType = type(rowIndex)
 
@@ -540,7 +540,7 @@ end
 
 function DataCritic:applyFunction(functionToApply, rowIndex, columnIndex)
 
-	self:wrapFunctionInProtectedCall(function()
+	return self:wrapFunctionInProtectedCall(function()
 
 		local rowIndexValueType = type(rowIndex)
 
@@ -609,7 +609,7 @@ end
 
 function DataCritic:addColumn(dataColumnVector, columnIndex, columnHeaderValue)
 	
-	self:wrapFunctionInProtectedCall(function()
+	return self:wrapFunctionInProtectedCall(function()
 		
 		local columnIndexValueType = type(columnIndex)
 
@@ -649,7 +649,7 @@ end
 
 function DataCritic:addRow(dataRowVector, rowIndex)
 
-	self:wrapFunctionInProtectedCall(function()
+	return self:wrapFunctionInProtectedCall(function()
 
 		local rowIndexValueType = type(rowIndex)
 
@@ -687,7 +687,7 @@ end
 
 function DataCritic:deleteColumn(columnIndex)
 
-	self:wrapFunctionInProtectedCall(function()
+	return self:wrapFunctionInProtectedCall(function()
 
 		local columnIndexValueType = type(columnIndex)
 
@@ -727,7 +727,7 @@ end
 
 function DataCritic:deleteRow(rowIndex)
 
-	self:wrapFunctionInProtectedCall(function()
+	return self:wrapFunctionInProtectedCall(function()
 
 		local rowIndexValueType = type(rowIndex)
 
@@ -874,7 +874,7 @@ end
 
 function DataCritic:removeMissingData(rowIndex, columnIndex)
 	
-	self:wrapFunctionInProtectedCall(function()
+	return self:wrapFunctionInProtectedCall(function()
 		
 		local newData = {}
 
