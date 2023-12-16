@@ -430,7 +430,7 @@ function DataCritic:revertToPreviousDataFrame()
 	
 end
 
-function DataCritic:replaceMissingDataWithValue(value, rowIndex, columnIndex)
+function DataCritic:replaceMissingValuesWithValue(value, rowIndex, columnIndex)
 	
 	return self:wrapFunctionInProtectedCall(function()
 		
@@ -482,7 +482,7 @@ function DataCritic:replaceMissingDataWithValue(value, rowIndex, columnIndex)
 	
 end
 
-function DataCritic:replaceMissingDataWithFunction(functionToApply, rowIndex, columnIndex)
+function DataCritic:replaceMissingValuesWithFunction(functionToApply, rowIndex, columnIndex)
 	
 	return self:wrapFunctionInProtectedCall(function()
 		
@@ -825,7 +825,7 @@ function DataCritic:exportDataFrame(fileType, separator)
 	
 end
 
-function DataCritic:findRowsWithMissingData(columnIndexTable)
+function DataCritic:findRowsWithMissingValues(columnIndexTable)
 	
 	if (type(columnIndexTable) ~= "table") then columnIndexTable = {columnIndexTable} end
 	
@@ -851,7 +851,7 @@ function DataCritic:findRowsWithMissingData(columnIndexTable)
 	
 end
 
-function DataCritic:findColumnsWithMissingData(rowIndexTable)
+function DataCritic:findColumnsWithMissingValues(rowIndexTable)
 	
 	local columnIndexTable = {}
 
@@ -873,7 +873,7 @@ function DataCritic:findColumnsWithMissingData(rowIndexTable)
 	
 end
 
-function DataCritic:removeMissingData(rowIndex, columnIndex)
+function DataCritic:removeMissingValues(rowIndex, columnIndex)
 	
 	return self:wrapFunctionInProtectedCall(function()
 		
