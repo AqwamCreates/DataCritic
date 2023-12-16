@@ -811,7 +811,8 @@ function DataCritic:exportDataFrame(fileType, separator)
 				
 				stringToExport = stringToExport .. dataValue
 				
-				if (i < #dataRow) then stringToExport = stringToExport .. separator end
+				if (i < #dataRow) then stringToExport = stringToExport .. separator .. " " end
+				
 			end
 			
 			stringToExport = stringToExport .. "\n"
