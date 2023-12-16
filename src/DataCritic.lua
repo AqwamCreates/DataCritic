@@ -218,7 +218,7 @@ function DataCritic:wrapFunctionInProtectedCall(functionToRun)
 	
 	local previousHeader = deepCopyTable(self.Header)
 	
-	if self.AlwaysSavePreviousDataAndHeader then
+	if (self.AlwaysSavePreviousDataAndHeader) then
 		
 		self.PreviousHeader = previousHeader
 		self.PreviousData = previousData
