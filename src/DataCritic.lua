@@ -884,8 +884,9 @@ function DataCritic:removeMissingData(rowIndex, columnIndex)
 
 		if (rowIndexValueType == "number") and (columnIndexValueType == "number") then
 
-			local selectedValue = self.Data[rowIndex][columnIndex]
-
+			local value = self.Data[rowIndex][columnIndex]
+			
+			if (type(value) == "nil") then table.remove(newData, self.Data[rowIndex]) end
 
 		elseif (rowIndexValueType == "number") and (columnIndexValueType == "nil") then
 
