@@ -889,13 +889,24 @@ function DataCritic:removeMissingData(rowIndex, columnIndex)
 			if (type(value) == "nil") then table.remove(newData, self.Data[rowIndex]) end
 
 		elseif (rowIndexValueType == "number") and (columnIndexValueType == "nil") then
-
+			
+			local isRowRemoved = false
+			
 			for i = 1, #self.Data[1], 1 do
 				
-				local value = self.Data[rowIndex][i]
+				if (type(self.Data[rowIndex][i]) ~= "nil") then continue end
 				
-				if (type(value) ~= "nil") then table.insert(newData, self.Data[rowIndex]) end
-
+				isRowRemoved = true
+				break
+				
+			end
+			
+			for i = 1, #self.Data, 1 do
+				
+				if (i == rowIndex) and isRowRemoved then continue end
+				
+				table.insert(newData, self.Data[i])
+				
 			end
 
 		elseif (rowIndexValueType == "nil") and (columnIndexValueType == "number") then
